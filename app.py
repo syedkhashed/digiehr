@@ -7,13 +7,22 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Debugging: Print all Firebase environment variables (remove this in production)
+st.write({
+    "FIREBASE_TYPE": os.getenv("FIREBASE_TYPE"),
+    "FIREBASE_PROJECT_ID": os.getenv("FIREBASE_PROJECT_ID"),
+    "FIREBASE_PRIVATE_KEY": os.getenv("FIREBASE_PRIVATE_KEY"),  # Be careful not to expose sensitive data
+    "FIREBASE_CLIENT_EMAIL": os.getenv("FIREBASE_CLIENT_EMAIL"),
+    "FIREBASE_CLIENT_ID": os.getenv("FIREBASE_CLIENT_ID"),
+})
+
 # Initialize Firebase
 if not firebase_admin._apps:
     firebase_credentials = {
         "type": os.getenv("FIREBASE_TYPE"),
         "project_id": os.getenv("FIREBASE_PROJECT_ID"),
         "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-        "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n'),
+        "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n') if os.getenv("FIREBASE_PRIVATE_KEY") else None,
         "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
         "client_id": os.getenv("FIREBASE_CLIENT_ID"),
         "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
@@ -21,13 +30,15 @@ if not firebase_admin._apps:
         "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
         "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL")
     }
-    
+
     # Check if credentials are correctly formatted
-    st.write(firebase_credentials)  # Debug line, remove in production
-    cred = credentials.Certificate(firebase_credentials)
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': 'your-firebase-bucket-name.appspot.com'  # Replace with your Firebase Storage bucket name
-    })
+    if firebase_credentials["private_key"] is None:
+        st.error("Firebase private key is not set in the environment variables.")
+    else:
+        cred = credentials.Certificate(firebase_credentials)
+        firebase_admin.initialize_app(cred, {
+            'storageBucket': 'your-firebase-bucket-name.appspot.com'  # Replace with your Firebase Storage bucket name
+        })
 
 # Firebase Services
 bucket = storage.bucket()
