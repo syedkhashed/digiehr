@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize Firebase Admin SDK
+# Initialize Firebase Admin SDK if not already initialized
 if not firebase_admin._apps:
     cred = credentials.Certificate({
         "type": os.getenv("FIREBASE_TYPE"),
@@ -22,14 +22,15 @@ if not firebase_admin._apps:
         "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_CERT_URL"),
     })
     firebase_admin.initialize_app(cred, {
-        'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")
+        'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")  # Ensure this is correctly set in your .env
     })
 
 # Firestore client
 db = firestore.client()
 
 # Storage bucket
-bucket = storage.bucket()
+bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")  # Fetch bucket name from environment variable
+bucket = storage.bucket(bucket_name)  # Use the bucket name explicitly
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
