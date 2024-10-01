@@ -17,8 +17,9 @@ if not firebase_admin._apps:
 # Firestore client
 db = firestore.client()
 
-# Storage bucket
-bucket = storage.bucket()  # Initialize the bucket after the app is initialized
+# Explicitly initialize the bucket
+bucket_name = 'digiehr-c071a.appspot.com'  # Specify your bucket name
+bucket = storage.bucket(bucket_name)  # Initialize the storage bucket explicitly
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
