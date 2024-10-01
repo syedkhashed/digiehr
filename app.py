@@ -1,21 +1,17 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
-import os
 import json
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Get Firebase credentials from environment variable
-firebase_credentials = json.loads(os.getenv('FIREBASE_CREDENTIALS'))
+# Load Firebase credentials from the JSON file
+with open('digiehr_firestore.json') as f:
+    firebase_credentials = json.load(f)
 
 # Initialize Firebase Admin SDK if not already initialized
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")  # Load bucket name from environment variable
+        'storageBucket': 'digiehr-c071a.appspot.com'  # Your Firebase Storage bucket name
     })
 
 # Firestore client
