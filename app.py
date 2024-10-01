@@ -29,8 +29,8 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 # Storage bucket
-bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")  # Fetch bucket name from environment variable
-bucket = storage.bucket(bucket_name)  # Use the bucket name explicitly
+bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")  # Fetch bucket name from environment variable (should be "digiehr-c071a.appspot.com")
+bucket = storage.bucket(bucket_name)  # Use the correct bucket name without gs://
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
