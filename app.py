@@ -7,24 +7,34 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Debugging: Print all Firebase environment variables (remove this in production)
-st.write({
-    "FIREBASE_TYPE": os.getenv("FIREBASE_TYPE"),
-    "FIREBASE_PROJECT_ID": os.getenv("FIREBASE_PROJECT_ID"),
-    "FIREBASE_PRIVATE_KEY": os.getenv("FIREBASE_PRIVATE_KEY"),  # Be careful not to expose sensitive data
-    "FIREBASE_CLIENT_EMAIL": os.getenv("FIREBASE_CLIENT_EMAIL"),
-    "FIREBASE_CLIENT_ID": os.getenv("FIREBASE_CLIENT_ID"),
-})
+# Debugging: Check if environment variables are loaded
+firebase_type = os.getenv("FIREBASE_TYPE")
+firebase_project_id = os.getenv("FIREBASE_PROJECT_ID")
+firebase_private_key = os.getenv("FIREBASE_PRIVATE_KEY")
+firebase_client_email = os.getenv("FIREBASE_CLIENT_EMAIL")
+firebase_client_id = os.getenv("FIREBASE_CLIENT_ID")
+
+# Print debug messages
+if not firebase_type:
+    st.warning("FIREBASE_TYPE is not set.")
+if not firebase_project_id:
+    st.warning("FIREBASE_PROJECT_ID is not set.")
+if not firebase_private_key:
+    st.warning("FIREBASE_PRIVATE_KEY is not set.")
+if not firebase_client_email:
+    st.warning("FIREBASE_CLIENT_EMAIL is not set.")
+if not firebase_client_id:
+    st.warning("FIREBASE_CLIENT_ID is not set.")
 
 # Initialize Firebase
 if not firebase_admin._apps:
     firebase_credentials = {
-        "type": os.getenv("FIREBASE_TYPE"),
-        "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+        "type": firebase_type,
+        "project_id": firebase_project_id,
         "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-        "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n') if os.getenv("FIREBASE_PRIVATE_KEY") else None,
-        "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-        "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+        "private_key": firebase_private_key.replace('\\n', '\n') if firebase_private_key else None,
+        "client_email": firebase_client_email,
+        "client_id": firebase_client_id,
         "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
         "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
         "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
