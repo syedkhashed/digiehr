@@ -1,6 +1,6 @@
 import streamlit as st
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, storage
 import os
 from dotenv import load_dotenv
 
@@ -19,12 +19,15 @@ if not firebase_admin._apps:
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-ymly9%40digiehr-c071a.iam.gserviceaccount.com",
+        "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
     })
-    firebase_admin.initialize_app(cred)
+    firebase_admin.initialize_app(cred, {
+        'storageBucket': os.getenv('FIREBASE_STORAGE_BUCKET')  # Firebase Storage bucket
+    })
 
-# Firestore client
+# Firestore and Storage clients
 db = firestore.client()
+bucket = storage.bucket()
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
@@ -59,8 +62,10 @@ if aadhaar_number:
 
     if uploaded_files:
         for uploaded_file in uploaded_files:
-            # Upload each file to Firestore
+            # Create the file path in Firebase Storage
             blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
+            
+            # Upload the file to the defined blob in Firebase Storage
             blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
 
             # Update Firestore with new file information
