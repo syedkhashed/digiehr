@@ -24,7 +24,7 @@ if not firebase_admin._apps:
 
     cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': 'digiehr-2f37c.appspot.com'  # Your Firebase Storage bucket name
+        'storageBucket': 'digiehr-2f37c.appspot.com'
     })
 
 # Firebase Services
@@ -38,6 +38,7 @@ aadhaar_number = st.text_input("Enter your Aadhaar Number", type="password")
 
 # Add a login button
 if st.button("Login"):
+    st.write("Using Aadhaar Number:", aadhaar_number)  # Debugging output
     if aadhaar_number:
         # Check if Aadhaar number exists in Firestore
         doc_ref = db.collection('users').document(aadhaar_number)
@@ -64,11 +65,9 @@ if st.button("Login"):
 
         if uploaded_files:
             for uploaded_file in uploaded_files:
-                # Create a folder for the Aadhaar number and upload files there
                 blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
                 blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
 
-                # Update Firestore with new file information
                 doc_ref.set({
                     "files": firestore.ArrayUnion([f"{aadhaar_number}/{uploaded_file.name}"])
                 }, merge=True)
