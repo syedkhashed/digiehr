@@ -2,35 +2,27 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import os
+import json
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
+# Get Firebase credentials from environment variable
+firebase_credentials = json.loads(os.getenv('FIREBASE_CREDENTIALS'))
+
 # Initialize Firebase Admin SDK if not already initialized
 if not firebase_admin._apps:
-    cred = credentials.Certificate({
-        "type": os.getenv("FIREBASE_TYPE"),
-        "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-        "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-        "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n'),
-        "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-        "client_id": os.getenv("FIREBASE_CLIENT_ID"),
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_CERT_URL"),
-    })
+    cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")  # Ensure this is correctly set in your .env
+        'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")  # Load bucket name from environment variable
     })
 
 # Firestore client
 db = firestore.client()
 
 # Storage bucket
-bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")  # Fetch bucket name from environment variable (should be "digiehr-c071a.appspot.com")
-bucket = storage.bucket(bucket_name)  # Use the correct bucket name without gs://
+bucket = storage.bucket()
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
