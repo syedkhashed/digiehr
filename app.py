@@ -47,7 +47,7 @@ if not firebase_admin._apps:
     else:
         cred = credentials.Certificate(firebase_credentials)
         firebase_admin.initialize_app(cred, {
-            'storageBucket': 'your-firebase-bucket-name.appspot.com'  # Replace with your Firebase Storage bucket name
+            'storageBucket': 'digiehr-2f37c.appspot.com'  # Your Firebase Storage bucket name
         })
 
 # Firebase Services
@@ -66,16 +66,17 @@ if aadhaar_number:
 
     if doc.exists:
         st.write("Files associated with your Aadhaar Number:")
-
-        # Display uploaded files
         user_files = doc_ref.get().to_dict().get("files", [])
-        for file in user_files:
-            st.write(f"File: {file}")
-            st.download_button(label=f"Download {file}", 
-                               data=bucket.blob(file).download_as_bytes(),
-                               file_name=file)
+        if user_files:
+            for file in user_files:
+                st.write(f"File: {file}")
+                st.download_button(label=f"Download {file}", 
+                                   data=bucket.blob(file).download_as_bytes(),
+                                   file_name=file)
+        else:
+            st.write("No files found for this Aadhaar Number.")
     else:
-        st.write("No files found for this Aadhaar Number.")
+        st.write("No files found for this Aadhaar Number. Creating folder...")
 
     # File Upload Section
     st.write("---")
@@ -84,7 +85,7 @@ if aadhaar_number:
 
     if uploaded_files:
         for uploaded_file in uploaded_files:
-            # Upload each file to Firebase Storage
+            # Create a folder for the Aadhaar number and upload files there
             blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
             blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
 
