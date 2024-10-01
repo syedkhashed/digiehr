@@ -11,14 +11,14 @@ with open('digiehr_firestore.json') as f:
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': 'digiehr-c071a.appspot.com'  # Your Firebase Storage bucket name
+        'storageBucket': 'digiehr-c071a.appspot.com'  # Ensure correct bucket name
     })
 
 # Firestore client
 db = firestore.client()
 
 # Storage bucket
-bucket = storage.bucket()
+bucket = storage.bucket()  # Initialize the bucket after the app is initialized
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
