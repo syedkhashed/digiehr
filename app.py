@@ -4,8 +4,8 @@ from firebase_admin import credentials, firestore
 
 # Initialize Firebase Admin SDK using Streamlit secrets
 if not firebase_admin._apps:
-    firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]  # Ensure this contains the JSON as a string
-    cred = credentials.Certificate(firebase_credentials)
+    firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]  # This should be a dict
+    cred = credentials.Certificate(firebase_credentials)  # Pass the dictionary directly
     firebase_admin.initialize_app(cred)
 
 # Firestore client
