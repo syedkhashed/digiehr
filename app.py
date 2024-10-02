@@ -6,39 +6,33 @@ import time
 # Initialize Firebase Admin SDK
 firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]
 if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_credentials)
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': 'digiehr-f3177.appspot.com'  # Correct bucket name
-    })
+    try:
+        cred = credentials.Certificate(firebase_credentials)
+        firebase_admin.initialize_app(cred, {
+            'storageBucket': 'digiehr-f3177.appspot.com'
+        })
+        st.success("Firebase Admin initialized.")
+    except Exception as e:
+        st.error(f"Error initializing Firebase: {e}")
 
 # Firestore client
-db = firestore.client()
-bucket = storage.bucket('digiehr-f3177.appspot.com')
+try:
+    db = firestore.client()
+    bucket = storage.bucket('digiehr-f3177.appspot.com')
+    st.success("Firestore and Storage initialized.")
+except Exception as e:
+    st.error(f"Error connecting to Firestore: {e}")
 
 # Function to test Firestore connection
 def test_firestore_connection():
     try:
         st.write("Testing Firestore connection...")
-        db.collection('users').limit(1).get()
+        db.collection('users').limit(1).get()  # This should trigger a connection
+        st.success("Firestore connection successful!")
         return True
     except Exception as e:
         st.error(f"Firestore connection error: {e}")
         return False
-
-# Function to fetch user document with a timeout
-def fetch_user_doc(doc_ref):
-    start_time = time.time()
-    while True:
-        try:
-            st.write("Fetching user document...")
-            doc = doc_ref.get()
-            return doc
-        except Exception as e:
-            st.error(f"Error fetching document: {e}")
-            return None
-        if time.time() - start_time > 5:  # 5 seconds timeout
-            st.error("Request timed out. Please try again.")
-            return None
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
