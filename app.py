@@ -10,15 +10,18 @@ def initialize_firebase():
         with open('ehr.json') as f:
             firebase_credentials = json.load(f)
 
-        # Initialize Firebase Admin SDK
-        cred = credentials.Certificate(firebase_credentials)
-        firebase_admin.initialize_app(cred, {
-            'storageBucket': 'digiehr-d9d5b.appspot.com'  # Correct bucket name
-        })
+        # Initialize Firebase Admin SDK if not already initialized
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(firebase_credentials)
+            firebase_admin.initialize_app(cred, {
+                'storageBucket': 'digiehr-d9d5b.appspot.com'  # Correct bucket name
+            })
+            st.success("Firebase initialized successfully.")
+        else:
+            st.info("Firebase app already initialized.")
         
         # Firestore client
         db = firestore.client()
-        st.success("Firebase initialized successfully.")
         return db
     except Exception as e:
         st.error(f"Failed to initialize Firebase: {e}")
