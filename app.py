@@ -58,6 +58,7 @@ if st.button("Login"):
                 st.error("No files found for this Aadhaar Number.")
         except Exception as e:
             st.error(f"Error fetching data: {e}")
+            st.write("Please check your internet connection and Firestore configuration.")
     else:
         st.warning("Please enter your Aadhaar Number.")
 
@@ -82,3 +83,13 @@ if is_logged_in:
                 st.success(f"File '{uploaded_file.name}' uploaded successfully!")
             except Exception as e:
                 st.error(f"Error uploading file '{uploaded_file.name}': {e}")
+
+# Debugging: Check Firebase connection
+try:
+    # Simple test to check if Firestore is reachable
+    test_doc_ref = db.collection('users').document('test_aadhaar_number')  # Replace with an existing test Aadhaar number if available
+    test_doc = test_doc_ref.get()
+    if test_doc.exists:
+        st.write("Firestore is reachable!")
+except Exception as e:
+    st.error(f"Error connecting to Firestore: {e}")
