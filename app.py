@@ -2,6 +2,7 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import json
+import time
 
 # Function to initialize Firebase
 def initialize_firebase():
@@ -14,7 +15,7 @@ def initialize_firebase():
         if not firebase_admin._apps:
             cred = credentials.Certificate(firebase_credentials)
             firebase_admin.initialize_app(cred, {
-                'storageBucket': 'digiehr-d9d5b.appspot.com'  # Correct bucket name
+                'storageBucket': 'digiehr-d9d5b.appspot.com'
             })
             st.success("Firebase initialized successfully.")
         else:
@@ -30,7 +31,7 @@ def initialize_firebase():
 # Test Firestore connection
 def test_firestore_connection(db):
     try:
-        # Test Firestore connection
+        st.write("Testing Firestore connection...")
         test_doc_ref = db.collection('users').document('test_user')
         doc = test_doc_ref.get()
         if doc.exists:
@@ -61,12 +62,15 @@ if db:
     # Login button
     if st.button("Login"):
         if aadhaar_number:
-            # Check if Aadhaar number exists in Firestore
+            st.write("Checking Aadhaar number...")
             doc_ref = db.collection('users').document(aadhaar_number)
             st.write(f"Accessing document: {doc_ref.id}")
 
             try:
+                start_time = time.time()
                 doc = doc_ref.get()
+                st.write(f"Document retrieval took {time.time() - start_time:.2f} seconds.")
+                
                 if doc.exists:
                     st.success("Login successful!")
                     is_logged_in = True
@@ -98,9 +102,13 @@ if db:
 
         if uploaded_files:
             for uploaded_file in uploaded_files:
-                # Upload each file to Firebase Storage
+                st.write(f"Uploading {uploaded_file.name}...")
                 blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
+
+                # Measure upload time
+                start_time = time.time()
                 blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
+                st.write(f"Upload took {time.time() - start_time:.2f} seconds.")
 
                 # Update Firestore with new file information
                 doc_ref.set({
