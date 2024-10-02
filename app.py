@@ -1,12 +1,9 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
-import json
-import os
 
+# Initialize Firebase Admin SDK
 firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]
-
-# Initialize Firebase Admin SDK if not already initialized
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred, {
@@ -15,9 +12,7 @@ if not firebase_admin._apps:
 
 # Firestore client
 db = firestore.client()
-
-# Explicitly initialize the storage bucket after initializing the app
-bucket = storage.bucket('digiehr-f3177.appspot.com')  # Specify the bucket name directly
+bucket = storage.bucket('digiehr-f3177.appspot.com')
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
@@ -30,16 +25,15 @@ is_logged_in = False
 # Login button
 if st.button("Login"):
     if aadhaar_number:
-        # Check if Aadhaar number exists in Firestore
+        st.write("Checking Aadhaar Number...")  # Debugging log
         doc_ref = db.collection('users').document(aadhaar_number)
         doc = doc_ref.get()
 
         if doc.exists:
             st.success("Login successful!")
-            is_logged_in = True  # Set the login status to true
+            is_logged_in = True
             st.write("Files associated with your Aadhaar Number:")
-
-            # Display uploaded files
+            
             user_files = doc_ref.get().to_dict().get("files", [])
             if user_files:
                 for file in user_files:
@@ -62,7 +56,6 @@ if is_logged_in:
 
     if uploaded_files:
         for uploaded_file in uploaded_files:
-            # Upload each file to Firebase Storage
             blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
             blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
 
@@ -72,3 +65,4 @@ if is_logged_in:
             }, merge=True)
 
         st.success("Files uploaded successfully!")
+
