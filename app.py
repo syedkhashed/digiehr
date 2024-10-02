@@ -2,14 +2,15 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Initialize Firebase Admin SDK using Streamlit secrets
+# Initialize Firebase Admin SDK
 if not firebase_admin._apps:
-    firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]  # This should be a dict
-    cred = credentials.Certificate(firebase_credentials)  # Pass the dictionary directly
+    firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]
+    cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred)
 
 # Firestore client
 db = firestore.client()
+
 
 # Function to test Firestore connection
 def test_firestore_connection():
