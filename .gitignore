@@ -164,4 +164,4 @@ cython_debug/
 
 #json ignore
 digiehr_firestore.json
-ehr.json
+
