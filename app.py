@@ -1,15 +1,23 @@
 import streamlit as st
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Initialize Firebase Admin SDK
+# Check if Firebase has been initialized already
 if not firebase_admin._apps:
+    # Get the credentials from secrets
     firebase_credentials = st.secrets["FIREBASE_CREDENTIALS"]
+    
+    # If using a TOML file, this step may not be necessary as Streamlit handles it
+    # Ensure it's a dictionary
     cred = credentials.Certificate(firebase_credentials)
+
+    # Initialize Firebase Admin SDK
     firebase_admin.initialize_app(cred)
 
 # Firestore client
 db = firestore.client()
+
 
 
 # Function to test Firestore connection
