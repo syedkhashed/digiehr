@@ -18,6 +18,7 @@ bucket = storage.bucket('digiehr-f3177.appspot.com')
 # Function to test Firestore connection
 def test_firestore_connection():
     try:
+        st.write("Testing Firestore connection...")
         db.collection('users').limit(1).get()
         return True
     except Exception as e:
@@ -29,6 +30,7 @@ def fetch_user_doc(doc_ref):
     start_time = time.time()
     while True:
         try:
+            st.write("Fetching user document...")
             doc = doc_ref.get()
             return doc
         except Exception as e:
