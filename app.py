@@ -58,7 +58,7 @@ if st.button("Login"):
 
         doc = fetch_user_doc(doc_ref)
         if doc is None:
-            return  # Exit if timed out or error occurred
+            st.stop()  # Exit if timed out or error occurred
 
         if doc.exists:
             st.success("Login successful!")
