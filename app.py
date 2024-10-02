@@ -4,21 +4,21 @@ from firebase_admin import credentials, firestore, storage
 import json
 
 # Load Firebase credentials from the JSON file
-with open('digiehr_firestore.json') as f:
+with open('ehr.json') as f:
     firebase_credentials = json.load(f)
 
 # Initialize Firebase Admin SDK if not already initialized
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_credentials)
     firebase_admin.initialize_app(cred, {
-        'storageBucket': 'digiehr-f3177.appspot.com'  # Correct bucket name
+        'storageBucket': 'digiehr-d9d5b.appspot.com'  # Correct bucket name
     })
 
 # Firestore client
 db = firestore.client()
 
 # Explicitly initialize the storage bucket after initializing the app
-bucket = storage.bucket('digiehr-f3177.appspot.com')  # Specify the bucket name directly
+bucket = storage.bucket('digiehr-d9d5b.appspot.com')  # Specify the bucket name directly
 
 # Aadhaar-based login system
 st.title("Aadhaar File Management System")
