@@ -25,9 +25,6 @@ st.title("Aadhaar File Management System")
 
 aadhaar_number = st.text_input("Enter your Aadhaar Number", type="password")
 
-# Variable to check if the user is logged in
-is_logged_in = False
-
 # Login button
 if st.button("Login"):
     if aadhaar_number:
@@ -36,8 +33,6 @@ if st.button("Login"):
         doc = doc_ref.get()
 
         if doc.exists:
-            st.success("Login successful!")
-            is_logged_in = True  # Set the login status to true
             st.write("Files associated with your Aadhaar Number:")
 
             # Display uploaded files
@@ -51,25 +46,24 @@ if st.button("Login"):
             else:
                 st.write("No files found for this Aadhaar Number.")
         else:
-            st.error("No files found for this Aadhaar Number.")
+            st.write("No files found for this Aadhaar Number.")
     else:
         st.warning("Please enter your Aadhaar Number.")
 
-# Conditional File Upload Section
-if is_logged_in:
-    st.write("---")
-    st.subheader("Upload New Files")
-    uploaded_files = st.file_uploader("Choose files to upload", accept_multiple_files=True)
+# File Upload Section
+st.write("---")
+st.subheader("Upload New Files")
+uploaded_files = st.file_uploader("Choose files to upload", accept_multiple_files=True)
 
-    if uploaded_files:
-        for uploaded_file in uploaded_files:
-            # Upload each file to Firebase Storage
-            blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
-            blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
+if uploaded_files:
+    for uploaded_file in uploaded_files:
+        # Upload each file to Firebase Storage
+        blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
+        blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
 
-            # Update Firestore with new file information
-            doc_ref.set({
-                "files": firestore.ArrayUnion([f"{aadhaar_number}/{uploaded_file.name}"])
-            }, merge=True)
+        # Update Firestore with new file information
+        doc_ref.set({
+            "files": firestore.ArrayUnion([f"{aadhaar_number}/{uploaded_file.name}"])
+        }, merge=True)
 
-        st.success("Files uploaded successfully!")
+    st.success("Files uploaded successfully!")
