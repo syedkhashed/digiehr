@@ -2,10 +2,10 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import json
+import os
 
-# Load Firebase credentials from the JSON file
-with open('digiehr_firestore.json') as f:
-    firebase_credentials = json.load(f)
+# Load Firebase credentials from environment variable
+firebase_credentials = json.loads(os.environ.get('FIREBASE_CREDENTIALS'))
 
 # Initialize Firebase Admin SDK if not already initialized
 if not firebase_admin._apps:
