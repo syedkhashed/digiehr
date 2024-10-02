@@ -31,27 +31,33 @@ is_logged_in = False
 # Login button
 if st.button("Login"):
     if aadhaar_number:
-        # Check if Aadhaar number exists in Firestore
-        doc_ref = db.collection('users').document(aadhaar_number)
-        doc = doc_ref.get()
+        st.write("Checking Aadhaar number in Firestore...")
+        try:
+            doc_ref = db.collection('users').document(aadhaar_number)
+            doc = doc_ref.get()
+            st.write("Aadhaar number checked.")
+            
+            if doc.exists:
+                st.success("Login successful!")
+                is_logged_in = True  # Set the login status to true
+                st.write("Files associated with your Aadhaar Number:")
 
-        if doc.exists:
-            st.success("Login successful!")
-            is_logged_in = True  # Set the login status to true
-            st.write("Files associated with your Aadhaar Number:")
-
-            # Display uploaded files
-            user_files = doc_ref.get().to_dict().get("files", [])
-            if user_files:
-                for file in user_files:
-                    st.write(f"File: {file}")
-                    st.download_button(label=f"Download {file}", 
-                                       data=bucket.blob(file).download_as_bytes(),
-                                       file_name=file)
+                # Display uploaded files
+                user_files = doc_ref.get().to_dict().get("files", [])
+                if user_files:
+                    for file in user_files:
+                        st.write(f"File: {file}")
+                        st.download_button(
+                            label=f"Download {file}", 
+                            data=bucket.blob(file).download_as_bytes(),
+                            file_name=file
+                        )
+                else:
+                    st.write("No files found for this Aadhaar Number.")
             else:
-                st.write("No files found for this Aadhaar Number.")
-        else:
-            st.error("No files found for this Aadhaar Number.")
+                st.error("No files found for this Aadhaar Number.")
+        except Exception as e:
+            st.error(f"Error fetching data: {e}")
     else:
         st.warning("Please enter your Aadhaar Number.")
 
@@ -63,13 +69,16 @@ if is_logged_in:
 
     if uploaded_files:
         for uploaded_file in uploaded_files:
-            # Upload each file to Firebase Storage
-            blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
-            blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
+            try:
+                # Upload each file to Firebase Storage
+                blob = bucket.blob(f"{aadhaar_number}/{uploaded_file.name}")
+                blob.upload_from_string(uploaded_file.read(), content_type=uploaded_file.type)
 
-            # Update Firestore with new file information
-            doc_ref.set({
-                "files": firestore.ArrayUnion([f"{aadhaar_number}/{uploaded_file.name}"])
-            }, merge=True)
+                # Update Firestore with new file information
+                doc_ref.set({
+                    "files": firestore.ArrayUnion([f"{aadhaar_number}/{uploaded_file.name}"])
+                }, merge=True)
 
-        st.success("Files uploaded successfully!")
+                st.success(f"File '{uploaded_file.name}' uploaded successfully!")
+            except Exception as e:
+                st.error(f"Error uploading file '{uploaded_file.name}': {e}")
